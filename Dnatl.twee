@@ -110,7 +110,7 @@ textarea#logEntry {
   background-color: #041f00 !important;
   color: #539a3a !important;
   border: 1px solid #539a3a !important;
-  font-family: monospace;
+  font-family: 'Courier Prime', monospace;
   resize: vertical;
 }
 
@@ -181,7 +181,7 @@ button:focus {
 
 <!-- Logo -->
 <div class="logo-container">
-  <img src="https://i.imgur.com/DqFRfAD.png" alt="SS Octal Alpha Logo">
+  <img src="https://raw.githubusercontent.com/cagriakyurt/dnatl/refs/heads/main/octalalpha.png" alt="SS Octal Alpha Logo">
 </div>
 
 <h2>System Output</h2>
@@ -190,7 +190,7 @@ button:focus {
 </div>
 
 <p>When you're ready, you can write your log entry below:</p>
-<textarea id="logEntry" rows="10" cols="60" placeholder="Type your log entry here..."></textarea><br>
+<textarea id="logEntry" rows="10" cols="60" placeholder="&gt; Type your log entry here..."></textarea><br>
 <button onclick="saveLog()">Save Log</button>
 <div id="save-message"></div>
 &gt; [[Return to Main Menu->Start]]
@@ -353,6 +353,7 @@ function showHiddenLog() {
     "› Repeating signal spike. Source… unreliable.",
     "› Atmospheric sensors offline. External breach likely.",
     "› Object found. Catalog entry missing.",
+    "Ḯ̸̪̩̚̕͠ ̷͓͎̺̞̩̹̾̂̀š̸̡̡̪̻̩̺̱̹ͅe̷̿̀͊̓̅̄͜͝ͅe̸̩̻͉͇̦͖̬̻̣͗̃͌̄̀̕ ̶̦̲̝̘͎̐̈̽̓͐͝y̵̡͎͖̩̟͇̤͝ơ̸͓͂̉̋̍ư̴̡̳͊̀̔͠.̵̱̬͇͈̼͆",
   ];
   const randomLog = secretLogs[Math.floor(Math.random() * secretLogs.length)];
   alert(randomLog);
@@ -522,7 +523,7 @@ button:focus {
 
 <!-- Logo -->
 <div class="logo-container">
-  <img src="https://i.imgur.com/DqFRfAD.png" alt="SS Octal Alpha Logo">
+  <img src="https://raw.githubusercontent.com/cagriakyurt/dnatl/refs/heads/main/octalalpha.png" alt="SS Octal Alpha Logo">
 </div>
 
 <h2>INTERNAL COMMUNICATIONS</h2>
@@ -760,7 +761,7 @@ button:focus {
 
 <!-- Logo -->
 <div class="logo-container">
-  <img src="https://i.imgur.com/DqFRfAD.png" alt="SS Octal Alpha Logo">
+  <img src="https://raw.githubusercontent.com/cagriakyurt/dnatl/refs/heads/main/octalalpha.png" alt="SS Octal Alpha Logo">
 </div>
 
 <h2>Log Archive</h2>
@@ -782,57 +783,69 @@ button:focus {
 <input type="file" id="importFile" accept=".json" style="display:none;" />
 
 <script>
-function exportLogs() {
+function exportLogsAsPDF() {
   const logs = SugarCube.State.variables.archive || [];
-  const logsJSON = JSON.stringify(logs, null, 2);
-  const blob = new Blob([logsJSON], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "gamelogs.json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
-function importLogs() {
-  document.getElementById("importFile").click();
-}
-
-document.getElementById("importFile").addEventListener("change", function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const importedData = JSON.parse(e.target.result);
-      if (Array.isArray(importedData)) {
-        SugarCube.State.variables.archive = importedData;
-        localStorage.setItem("gameLogs", JSON.stringify(importedData));
-        alert("Logs imported successfully!");
-        SugarCube.Engine.play("Start");
-      } else {
-        alert("Invalid log data format.");
-      }
-    } catch (error) {
-      alert("Error reading file: " + error.message);
-    }
-  };
-  reader.readAsText(file);
-});
-
-function clearLogs() {
-  const confirmDelete = prompt("To confirm deletion of ALL logs and reset the game, type: delete");
-  if (confirmDelete && confirmDelete.trim().toLowerCase() === "delete") {
-    localStorage.removeItem("gameLogs");
-    SugarCube.State.reset();
-    alert("All logs deleted. Game will restart now.");
-    SugarCube.Engine.play("Start"); // Start pasajını yeniden yükle
-  } else {
-    alert("Logs not deleted.");
+  if (logs.length === 0) {
+    alert("No logs to export.");
+    return;
   }
+
+  let pdfWindow = window.open("", "_blank");
+  pdfWindow.document.write(`
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Game Logs</title>
+      <style>
+        @page { margin: 0; }
+        body { 
+          font-family: monospace; 
+          font-size: 16px; 
+          white-space: pre-wrap;
+          color: #041f00; 
+          background-color: #ffffff; 
+          margin: 0 !important; 
+          padding: 0.5em !important;
+          line-height: 1.4;
+        }
+        h1 { 
+          text-align: center; 
+          color: #539a3a; 
+          margin: 0.5em 0;
+        }
+        .log-entry { 
+          margin-bottom: 1em; 
+          border-bottom: 1px dashed #539a3a; 
+          padding-bottom: 0.5em; 
+        }
+        .log-entry p { 
+          margin: 0.2em 0; 
+          white-space: pre-wrap; 
+          word-break: break-word;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Game Logs</h1>
+  `);
+
+  logs.forEach((log) => {
+    pdfWindow.document.write(`
+      <div class="log-entry">
+        <p><strong>Date:</strong> ${log.date}</p>
+        <p>${log.entry}</p>
+      </div>
+    `);
+  });
+
+  pdfWindow.document.write(`</body></html>`);
+  pdfWindow.document.close();
+  pdfWindow.print();
 }
 </script>
+
+<!-- Export PDF butonu -->
+<button onclick="exportLogsAsPDF()">Export Logs as PDF</button>
 
 &gt; [[Return to Main Menu->Start]]
 
@@ -1010,7 +1023,7 @@ button:focus {
 
 <!-- Logo -->
 <div class="logo-container">
-  <img src="https://i.imgur.com/DqFRfAD.png" alt="SS Octal Alpha Logo">
+  <img src="https://raw.githubusercontent.com/cagriakyurt/dnatl/refs/heads/main/octalalpha.png" alt="SS Octal Alpha Logo">
 </div>
 
 <!-- Uyarı mesajı -->
