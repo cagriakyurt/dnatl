@@ -1,0 +1,1242 @@
+:: StoryTitle
+Dnatl
+
+
+:: StoryData
+{
+  "ifid": "4970DF3D-7B90-4359-96DA-FDE3E7FDE2E7",
+  "format": "SugarCube",
+  "format-version": "2.37.3",
+  "start": "Start",
+  "zoom": 1
+}
+
+
+:: DrawCards {"position":"475,425","size":"100,100"}
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+
+<style>
+body {
+  background-color: #041f00;
+  color: #539a3a;
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px !important;
+  position: relative;
+}
+
+#ui-bar { display: none !important; }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: repeating-linear-gradient(
+    0deg, rgba(255,255,255,0.05),
+    rgba(255,255,255,0.05) 1px,
+    transparent 1px, transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.2);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 9999;
+  animation: crtFlicker 1s infinite alternate;
+}
+
+@keyframes crtFlicker {
+  0% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+body {
+  text-shadow: 0 0 1px #539a3a, 0 0 2px #539a3a;
+}
+
+a {
+  color: #539a3a;
+  font-weight: bold;
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+.logo-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.logo-container img {
+  width: 300px; height: auto;
+  background-color: #041f00;
+}
+
+ul { list-style: none; padding: 0; }
+ul li { margin: 10px 0; }
+
+#prompt-container-wrapper {
+  height: 150px;
+  overflow-y: auto;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+br { display: none !important; }
+p:empty { display: none !important; }
+p { margin: 5px 0 !important; }
+
+textarea,
+button {
+  display: block;
+  margin-top: 10px;
+}
+
+textarea#logEntry {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  resize: vertical;
+}
+
+.log-container {
+  border: 1px solid #539a3a;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  background-color: rgba(83, 154, 58, 0.05);
+}
+
+.log-container * {
+  margin: 0 !important;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+button {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+button:hover,
+button:focus {
+  outline: none !important;
+}
+
+#button-group { margin-top: 20px; }
+
+.warning-banner {
+  color: #539a3a;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #539a3a;
+  padding: 15px;
+  margin: 20px auto;
+  width: fit-content;
+  max-width: 90%;
+  box-sizing: border-box;
+}
+
+.warning-banner p {
+  margin: 0.2em 0;
+}
+
+.blinking-text {
+  font-size: 2em;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
+
+#prompt-container p::before {
+  content: "› ";
+  color: #539a3a;
+  margin-right: 5px;
+}
+</style>
+
+<!-- Logo -->
+<div class="logo-container">
+  <img src="https://i.imgur.com/DqFRfAD.png" alt="SS Octal Alpha Logo">
+</div>
+
+<h2>System Output</h2>
+<div id="prompt-container-wrapper">
+  <div id="prompt-container"></div>
+</div>
+
+<p>When you're ready, you can write your log entry below:</p>
+<textarea id="logEntry" rows="10" cols="60" placeholder="Type your log entry here..."></textarea><br>
+<button onclick="saveLog()">Save Log</button>
+<div id="save-message"></div>
+&gt; [[Return to Main Menu->Start]]
+
+<script>
+// Prompt listesi global tanımlı değilse bir kez tanımla
+if (typeof window.prompts === "undefined") {
+  window.prompts = [
+    "static λ loops λ interface λ whisper λ echo λ ping λ scramble λ broadcast",
+    "frequency λ ghost λ noise λ relay λ feedback λ modulation λ channel",
+    "decay λ burst λ code λ repeating λ signal λ warning λ lockdown",
+    "alarm λ breach λ fire λ leak λ error λ override λ containment",
+    "reactor λ quarantine λ pressure λ shutdown λ glitch λ protocol λ sensor",
+    "hazmat λ damage λ unstable λ code red λ presence λ beacon λ rift",
+    "shadow λ glow λ void λ organic λ fluid λ pulse λ hive",
+    "sentience λ signal λ artifact λ mimic λ unknown λ construct λ metallic",
+    "root λ spore λ pattern λ origin λ virus λ possibility λ loop",
+    "entity λ theory λ simulation λ glitch λ cause λ infection λ hallucination",
+    "corruption λ rift λ quantum λ protocol λ paradox λ interference λ descent λ symptom λ contagion",
+    "A corrupted signal arrives. Only one phrase is clear.",
+    "A video starts playing. It’s a memory you don’t recognize.",
+    "You access a private log. They mention you.",
+    "A transmission loops endlessly. You’ve memorized it.",
+    "A live feed shows something behind you — but no one’s there.",
+    "The Presence speaks through comms. What does it sound like?",
+    "You message someone declared dead. They reply.",
+    "Comms go silent. One last sound plays. Describe it.",
+    "A door malfunctions. Something important is beyond it.",
+    "Gravity fails in one section. What happens?",
+    "A drone behaves erratically. Describe its actions.",
+    "You’re locked in a forbidden room. Why were you there?",
+    "Life support fails — or seems to. How do you react?",
+    "An old announcement loops. It shouldn’t.",
+    "Conflicting system orders arrive. Who do you obey?",
+    "Something’s leaking. You don’t want to know what.",
+    "Emergency lights activate — no alarm. What’s going on?",
+    "The Presence overrides a system. What goes offline?",
+    "The AI issues corrupted commands. What does it say?",
+    "Something explodes. But you remember something… else.",
+    "Use only single words. That’s all you can manage.",
+    "A crew member acts… wrong. Something’s off.",
+    "A sealed container pulses. The label is unreadable.",
+    "Copy a phrase multiple times. You can’t stop repeating it.",
+    "You touch something — and reality shifts.",
+    "Describe a memory that isn’t yours.",
+    "The Presence reveals part of itself. Describe it.",
+    "Insert a phrase you don’t understand, but had to include.",
+    "What do you think is causing all this?",
+    "Do you trust the AI? Why or why not?",
+    "Has this happened before? Would you know?",
+    "Someone said something strange. You can’t stop thinking about it.",
+    "You suspect the mission isn’t what it seemed.",
+    "Your memories are changing. Are they real?",
+    "Is this natural… or something made?",
+    "What was being contained — and why?",
+    "You’re forming a theory. Lay it out.",
+    "An idea enters your mind. It isn’t yours.",
+    "You find a classified file. It confirms — or denies — your fears.",
+    "Someone else is logging, too. Who is it?",
+    "You receive a message meant for someone else. It’s personal. And disturbing.",
+    "A voice whispers your name through the comms. No one else hears it.",
+    "You find an old log entry… with your voice in it. But you don’t remember recording it.",
+    "You attempt to send a distress call — but something keeps rewriting your message.",
+    "A sudden power surge reboots all systems. What did you lose — or find?",
+    "Someone left a message scrawled on the wall: “Don’t trust the lights.”",
+    "An automated log says you’re somewhere you’ve never been.",
+    "A faint echo repeats your last words back to you, but twisted."
+  ];
+}
+
+// Seçilen promptlar için global alan
+window.selectedPrompts = [];
+
+// 3 prompt seç
+while (window.selectedPrompts.length < 3) {
+  const index = Math.floor(Math.random() * window.prompts.length);
+  if (!window.selectedPrompts.includes(window.prompts[index])) {
+    window.selectedPrompts.push(window.prompts[index]);
+  }
+}
+
+function saveLog() {
+  const entry = document.getElementById("logEntry").value;
+  const messageEl = document.getElementById("save-message");
+
+  if (!entry.trim()) {
+    messageEl.textContent = "Please write something before saving!";
+    return;
+  }
+
+  const now = new Date().toLocaleString();
+  const archive = SugarCube.State.variables.archive || [];
+
+  // Yeni logu ekle
+  archive.push({
+    date: now,
+    entry: entry
+  });
+  SugarCube.State.variables.archive = archive;
+
+  // LocalStorage’a da kaydet
+  localStorage.setItem("gameLogs", JSON.stringify(archive));
+
+  messageEl.textContent = `Log saved as ${now}`;
+}
+
+// Typewriter efekti
+function typewriterEffect(element, text, delay = 30, callback = null) {
+  let i = 0;
+  function type() {
+    if (i < text.length) {
+      element.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(type, delay);
+    } else if (callback) {
+      callback();
+    }
+  }
+  type();
+}
+
+function showNextPrompt(index = 0) {
+  const container = document.getElementById("prompt-container");
+  if (!container) return;
+
+  if (index < window.selectedPrompts.length) {
+    const p = document.createElement("p");
+    container.appendChild(p);
+    typewriterEffect(p, window.selectedPrompts[index], 30, () => {
+      setTimeout(() => showNextPrompt(index + 1), 500);
+    });
+  }
+}
+
+showNextPrompt();
+</script>
+
+<p style="text-align: left; font-size: 8px; opacity: 0.3; cursor: pointer;" onclick="showHiddenLog()">/intercept transmission</p>
+
+<script>
+function showHiddenLog() {
+  const secretLogs = [
+    "› Shadow beacon detected. Source unknown.",
+    "› Reactor leak contained. Or so we think.",
+    "› Access log #1138: 'I don't remember recording this…'",
+    "› Echoes of transmission: 'Find me…'",
+    "› Presence detected in containment bay.",
+    "› Fragmented code. No source identified.",
+    "› Transmission lost. Searching backup channels.",
+    "› Unauthorized log attempt. Identity unknown.",
+    "› Warning: system integrity compromised.",
+    "› Residual energy signatures found in lab sector.",
+    "› Audio file corrupted. Playback impossible.",
+    "› Emergency protocols engaged — anomaly unresolved.",
+    "› Bio-signature detected. Crew manifest mismatch.",
+    "› Internal comms looped message: 'Stay vigilant.'",
+    "› Control node unresponsive. Manual override required.",
+    "› Memory sector accessed by unidentified entity.",
+    "› Error log: sensory feed mismatch — possible hallucination.",
+    "› Repeating signal spike. Source… unreliable.",
+    "› Atmospheric sensors offline. External breach likely.",
+    "› Object found. Catalog entry missing.",
+  ];
+  const randomLog = secretLogs[Math.floor(Math.random() * secretLogs.length)];
+  alert(randomLog);
+}
+</script>
+
+
+:: Internal Communications {"position":"650,600","size":"100,100"}
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+body {
+  background-color: #041f00;
+  color: #539a3a;
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px !important;
+  position: relative;
+}
+
+#ui-bar { display: none !important; }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: repeating-linear-gradient(
+    0deg, rgba(255,255,255,0.05),
+    rgba(255,255,255,0.05) 1px,
+    transparent 1px, transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.2);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 9999;
+  animation: crtFlicker 1s infinite alternate;
+}
+
+@keyframes crtFlicker {
+  0% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+body {
+  text-shadow: 0 0 1px #539a3a, 0 0 2px #539a3a;
+}
+
+a {
+  color: #539a3a;
+  font-weight: bold;
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+.logo-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.logo-container img {
+  width: 300px; height: auto;
+  background-color: #041f00;
+}
+
+ul { list-style: none; padding: 0; }
+ul li { margin: 10px 0; }
+
+#prompt-container-wrapper {
+  height: 150px;
+  overflow-y: auto;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+br { display: none !important; }
+p:empty { display: none !important; }
+p { margin: 5px 0 !important; }
+
+textarea,
+button {
+  display: block;
+  margin-top: 10px;
+}
+
+textarea#logEntry {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  resize: vertical;
+}
+
+.log-container {
+  border: 1px solid #539a3a;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  background-color: rgba(83, 154, 58, 0.05);
+}
+
+.log-container * {
+  margin: 0 !important;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+button {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+button:hover,
+button:focus {
+  outline: none !important;
+}
+
+#button-group { margin-top: 20px; }
+
+.warning-banner {
+  color: #539a3a;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #539a3a;
+  padding: 15px;
+  margin: 20px auto;
+  width: fit-content;
+  max-width: 90%;
+  box-sizing: border-box;
+}
+
+.warning-banner p {
+  margin: 0.2em 0;
+}
+
+.blinking-text {
+  font-size: 2em;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
+</style>
+
+<!-- Logo -->
+<div class="logo-container">
+  <img src="https://i.imgur.com/DqFRfAD.png" alt="SS Octal Alpha Logo">
+</div>
+
+<h2>INTERNAL COMMUNICATIONS</h2>
+
+<div class="warning-box">
+  <strong>Warning:</strong> This experience contains themes such as death, psychological decay, unreality, and unknown entities that some may find disturbing. Discretion is advised.
+</div>
+
+<h3>WHAT IS THIS?</h3>
+<p>
+“Do Not Access This Log” is a science fiction journaling experience set aboard a deep-space vessel, station, or outpost. As a crew member under Class IV emergency protocol, you’re required to record daily logs — written or spoken.
+</p>
+<p>
+Something is wrong. A malfunction? A contagion? Or something worse? Each day for seven cycles, you’ll draw cards to guide your entry: technical failures, strange encounters, theories — or transmissions that aren’t yours.
+</p>
+<p>
+There are fragments of another voice in the system — a presence you can’t quite explain. At the end of your logging period, your entries are archived. The crisis is not over. Someone else will continue the record. Whether the logs help anyone survive is… uncertain.
+</p>
+
+<h3>HOW TO START?</h3>
+<p>
+You are a crew member aboard a spacecraft, station, or outpost affected by a Class IV emergency. Your orders are clear: maintain personal logs for psychological stability and data recovery.
+</p>
+<p>
+Start with your first log:
+</p>
+<ul>
+  <li>&gt; Identify your role (engineer, helm officer, scientist, etc.).</li>
+  <li>&gt; Describe the current state of the ship or station.</li>
+  <li>&gt; Explain what you know — or what you’ve been told — about the emergency.</li>
+  <li>&gt; Keep it professional. Or personal. Or both. You choose.</li>
+</ul>
+<p>
+If this is not your first cycle, review your previous entries. If something feels… off, trust your instincts. They may be all you have left. Click “Begin Cycle” to get your prompts.
+</p>
+
+<h3>HOW TO PLAY?</h3>
+<p>
+Each cycle (day), you will receive three random prompts. You may use all three, just one, or none. Use the prompts as inspiration — or ignore them entirely. When your entry is complete, prepare for the next cycle. Repeat this for seven days.
+</p>
+
+<h3>SECURITY</h3>
+<p>
+This experience simulates isolation, fear, and unreality in a fictional sci-fi setting. Play within your comfort zone, and avoid including real personal information.
+</p>
+<p>
+Your logs may be read or heard by others — be mindful of their potential impact. You are not required to share or pass on your log; let it drift if you choose. The Presence will find someone else.
+</p>
+
+<h3>MUSIC</h3>
+<p>
+A Spotify playlist is available to accompany your journaling experience and set the right mood for the story: http://bit.ly/dnatl
+</p>
+
+<h3>FIND ME</h3>
+<p>
+  Game designed by Çağrı Akyurt.<br />
+  Find me at 
+  <li><a href="https://x.com/lunchweek" target="_blank" rel="noopener noreferrer" style="color: #539a3a;">&gt; X: @lunchweek</a></li>
+  <li>&gt; Reddit: 
+  <a href="https://www.reddit.com/user/lunchweek/" target="_blank" rel="noopener noreferrer" style="color: #539a3a;">&gt; u/lunchweek</a></li> 
+  Write me at: 
+  <a href="mailto:cagriakyurt@gmail.com" style="color: #539a3a;">&gt; cagriakyurt@gmail.com</a>
+</p>
+<p>&gt; [[Return to Main Menu->Start]]</p>
+<footer style="margin-top: 40px; font-size: 0.9em; color: #539a3a; text-align: center; border-top: 1px solid #539a3a; padding-top: 15px;">
+  <p>
+    ❤️ Lovingly coded using <a href="https://twinery.org/" target="_blank" rel="noopener noreferrer" style="color:#539a3a; font-weight:bold;">Twine</a> with the help of <a href="https://openai.com/chatgpt" target="_blank" rel="noopener noreferrer" style="color:#539a3a; font-weight:bold;">ChatGPT</a>.<br>
+    Powered by <a href="https://www.motoslave.net/sugarcube/2/" target="_blank" rel="noopener noreferrer" style="color:#539a3a; font-weight:bold;">SugarCube</a>.<br>
+<p>&gt; If you enjoyed this, try my other game <a href="https://lunchweek.itch.io/do-not-read-this-journal" target="_blank" rel="noopener noreferrer" style="color:#539a3a; font-weight:bold;">Do not read this journal!</a>.</p>
+<a href="https://lunchweek.itch.io/do-not-read-this-journal" target="_blank" rel="noopener noreferrer" style="color:#539a3a; font-weight:bold;">itch.io/lunchweek</a> 
+  </p>
+</footer>
+
+
+:: LogArchive {"position":"750,400","size":"100,100"}
+
+<style>
+body {
+  background-color: #041f00;
+  color: #539a3a;
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px !important;
+  position: relative;
+}
+
+#ui-bar { display: none !important; }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: repeating-linear-gradient(
+    0deg, rgba(255,255,255,0.05),
+    rgba(255,255,255,0.05) 1px,
+    transparent 1px, transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.2);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 9999;
+  animation: crtFlicker 1s infinite alternate;
+}
+
+@keyframes crtFlicker {
+  0% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+body {
+  text-shadow: 0 0 1px #539a3a, 0 0 2px #539a3a;
+}
+
+a {
+  color: #539a3a;
+  font-weight: bold;
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+.logo-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.logo-container img {
+  width: 300px; height: auto;
+  background-color: #041f00;
+}
+
+ul { list-style: none; padding: 0; }
+ul li { margin: 10px 0; }
+
+#prompt-container-wrapper {
+  height: 150px;
+  overflow-y: auto;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+br { display: none !important; }
+p:empty { display: none !important; }
+p { margin: 5px 0 !important; }
+
+textarea,
+button {
+  display: block;
+  margin-top: 10px;
+}
+
+textarea#logEntry {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  resize: vertical;
+}
+
+.log-container {
+  border: 1px solid #539a3a;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  background-color: rgba(83, 154, 58, 0.05);
+}
+
+.log-container * {
+  margin: 0 !important;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+button {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+button:hover,
+button:focus {
+  outline: none !important;
+}
+
+#button-group { margin-top: 20px; }
+
+.warning-banner {
+  color: #539a3a;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #539a3a;
+  padding: 15px;
+  margin: 20px auto;
+  width: fit-content;
+  max-width: 90%;
+  box-sizing: border-box;
+}
+
+.warning-banner p {
+  margin: 0.2em 0;
+}
+
+.blinking-text {
+  font-size: 2em;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
+</style>
+
+<!-- Logo -->
+<div class="logo-container">
+  <img src="https://i.imgur.com/DqFRfAD.png" alt="SS Octal Alpha Logo">
+</div>
+
+<h2>Log Archive</h2>
+
+<<if $archive and $archive.length > 0>>
+  <<for _log range $archive>>
+    <div class="log-container">
+      <strong>Date:</strong> <<= _log.date>><br>
+      <pre><<= _log.entry>></pre>
+    </div>
+  <</for>>
+<<else>>
+  <p>No logs yet.</p>
+<</if>>
+
+<button onclick="importLogs()">Import Logs</button>
+<button onclick="exportLogs()">Export Logs</button>
+<button onclick="clearLogs()">Clear Logs</button>
+<input type="file" id="importFile" accept=".json" style="display:none;" />
+
+<script>
+function exportLogs() {
+  const logs = SugarCube.State.variables.archive || [];
+  const logsJSON = JSON.stringify(logs, null, 2);
+  const blob = new Blob([logsJSON], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "gamelogs.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function importLogs() {
+  document.getElementById("importFile").click();
+}
+
+document.getElementById("importFile").addEventListener("change", function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      if (Array.isArray(importedData)) {
+        SugarCube.State.variables.archive = importedData;
+        localStorage.setItem("gameLogs", JSON.stringify(importedData));
+        alert("Logs imported successfully!");
+        SugarCube.Engine.play("Start");
+      } else {
+        alert("Invalid log data format.");
+      }
+    } catch (error) {
+      alert("Error reading file: " + error.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+function clearLogs() {
+  const confirmDelete = prompt("To confirm deletion of ALL logs and reset the game, type: delete");
+  if (confirmDelete && confirmDelete.trim().toLowerCase() === "delete") {
+    localStorage.removeItem("gameLogs");
+    SugarCube.State.reset();
+    alert("All logs deleted. Game will restart now.");
+    SugarCube.Engine.play("Start"); // Start pasajını yeniden yükle
+  } else {
+    alert("Logs not deleted.");
+  }
+}
+</script>
+
+&gt; [[Return to Main Menu->Start]]
+
+
+:: Start {"position":"575,250","size":"100,100"}
+<<audio "bgmusic" volume 0.7 play>>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet">
+
+
+<!-- LocalStorage'dan logları yükle -->
+<script>
+if (localStorage.getItem("gameLogs")) {
+  SugarCube.State.variables.archive = JSON.parse(localStorage.getItem("gameLogs"));
+}
+</script>
+
+<!-- Stil ayarları -->
+<style>
+body {
+  background-color: #041f00;
+  color: #539a3a;
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px !important;
+  position: relative;
+}
+
+#ui-bar { display: none !important; }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: repeating-linear-gradient(
+    0deg, rgba(255,255,255,0.05),
+    rgba(255,255,255,0.05) 1px,
+    transparent 1px, transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.2);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 9999;
+  animation: crtFlicker 1s infinite alternate;
+}
+
+@keyframes crtFlicker {
+  0% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+body {
+  text-shadow: 0 0 1px #539a3a, 0 0 2px #539a3a;
+}
+
+a {
+  color: #539a3a;
+  font-weight: bold;
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+.logo-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.logo-container img {
+  width: 300px; height: auto;
+  background-color: #041f00;
+}
+
+ul { list-style: none; padding: 0; }
+ul li { margin: 10px 0; }
+
+#prompt-container-wrapper {
+  height: 150px;
+  overflow-y: auto;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+br { display: none !important; }
+p:empty { display: none !important; }
+p { margin: 5px 0 !important; }
+
+textarea,
+button {
+  display: block;
+  margin-top: 10px;
+}
+
+textarea#logEntry {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  resize: vertical;
+}
+
+.log-container {
+  border: 1px solid #539a3a;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  background-color: rgba(83, 154, 58, 0.05);
+}
+
+.log-container * {
+  margin: 0 !important;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+button {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+button:hover,
+button:focus {
+  outline: none !important;
+}
+
+#button-group { margin-top: 20px; }
+
+.warning-banner {
+  color: #539a3a;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #539a3a;
+  padding: 15px;
+  margin: 20px auto;
+  width: fit-content;
+  max-width: 90%;
+  box-sizing: border-box;
+}
+
+.warning-banner p {
+  margin: 0.2em 0;
+}
+
+.blinking-text {
+  font-size: 2em;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
+</style>
+
+<!-- Logo -->
+<div class="logo-container">
+  <img src="https://i.imgur.com/DqFRfAD.png" alt="SS Octal Alpha Logo">
+</div>
+
+<!-- Uyarı mesajı -->
+<div class="warning-banner">
+  <p class="blinking-text">WARNING</p>
+  <p>Class IV Emergency Protocol in Effect.</p>
+  <p>All crew are required to maintain daily log entries.</p>
+  <p>Consult the <strong>Internal Communications</strong> for your orders.</p>
+</div>
+
+<p>Choose your action:</p>
+<ul>
+  <li>&gt; [[Begin New Cycle->DrawCards]]</li>
+  <li>&gt; [[Log Archive->LogArchive]]</li>
+  <li>&gt; [[Internal Communications->Internal Communications]]</li>
+</ul>
+
+
+:: StoryInit {"position":"275,400","size":"100,100"}
+\:: StoryInit
+<<cacheaudio "bgmusic" "https://raw.githubusercontent.com/cagriakyurt/dnatl/main/bgmusicl.mp3">>
+
+<script>
+if (localStorage.getItem("gameLogs")) {
+  SugarCube.State.variables.archive = JSON.parse(localStorage.getItem("gameLogs"));
+}
+</script>
+
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+
+body {
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px; /* Burada font boyutunu 132px yaptık */
+}
+
+
+:: StoryStylesheet [stylesheet]
+body {
+  background-color: #041f00;
+  color: #539a3a;
+  font-family: 'Courier Prime', monospace;
+  font-size: 16px !important;
+  position: relative;
+}
+
+#ui-bar {
+  display: none !important;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,0.02),
+    rgba(255,255,255,0.02) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.1);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+a {
+  color: #539a3a;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.logo-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.logo-container img {
+  width: 300px;
+  height: auto;
+  background-color: #041f00;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  margin: 10px 0;
+}
+
+#prompt-container-wrapper {
+  height: 150px; /* Sabit yükseklik, oynatma efekti için ayarla */
+  overflow-y: auto;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+br {
+  display: none !important; /* Tüm <br> elementlerini gizle */
+}
+
+p:empty {
+  display: none !important; /* Boş <p>’leri gizle */
+}
+
+p {
+  margin: 5px 0 !important; /* Diğer p’lerin üst-alt boşlukları: 5px */
+}
+
+textarea,
+button {
+  display: block;
+  margin-top: 5px; /* biraz üst boşluk (isteğe bağlı) */
+}
+textarea#logEntry {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  resize: vertical;
+}
+
+/* Hover ve odak (focus) efektlerini temizle */
+textarea#logEntry:focus,
+textarea#logEntry:hover {
+  outline: none !important;
+  border-color: #539a3a !important;
+  background-color: #041f00 !important;
+}
+
+/* Placeholder rengi */
+textarea#logEntry::placeholder {
+  color: #539a3a !important;
+  opacity: 1 !important; /* Safari gibi tarayıcılar için tam yeşil */
+}
+
+/* Buton stili */
+button {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  font-family: monospace;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* Hover ve focus durumunda da aynı renkler kalsın */
+button:hover,
+button:focus {
+  background-color: #041f00 !important;
+  color: #539a3a !important;
+  border: 1px solid #539a3a !important;
+  outline: none !important;
+}
+
+a {
+  color: #539a3a;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: #539a3a !important;
+  text-decoration: underline;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.logo-container img {
+  width: 300px;
+  height: auto;
+  background-color: #041f00;
+}
+
+#story {
+  margin-left: 0 !important; /* Menü boşluğunu sıfırla */
+  padding-left: 0 !important; /* Menü boşluğunu sıfırla */
+}
+
+.warning-banner {
+  color: #539a3a;
+  font-weight: bold;
+  text-align: center;            /* Ortala */
+  border: 2px solid #539a3a;     /* Yeşil çerçeve */
+  padding: 15px;
+  margin: 20px auto;             /* Ortalamak için auto margin */
+  width: fit-content;            /* İçeriğe göre genişlik */
+  max-width: 90%;                /* Taşmayı engelle */
+  box-sizing: border-box;
+}
+
+.warning-banner p {
+  margin: 0.2em 0;
+}
+
+.blinking-text {
+  font-size: 2em;               /* Büyük “WARNING” */
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
